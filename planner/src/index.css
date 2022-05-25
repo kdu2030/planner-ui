@@ -53,12 +53,12 @@ a{
   margin: 0 0;
 }
 
-.top-bar h1{
-  display: inline;
-  margin-left: 10px;
-}
 .App{
   margin: 0 0;
 }
 
+.top-bar h1{
+  font-size: 20pt;
+  margin-top: 0px;
+}
 
