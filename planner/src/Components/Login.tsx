@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import Card from '@mui/material/Card';
 import TextField from '@mui/material/TextField';
 import { Button } from '@mui/material';
+import { Link } from 'react-router-dom';
+import TopBar from './TopBar';
 
 type LoginOptions = {
     setUserData: () => void;
@@ -13,6 +15,7 @@ type LoginOptions = {
 function Login() {
     return (
         <div className="Login">
+            <TopBar />
             <Card sx={{ width: "50%", position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)" }}>
                 <form id="login-form">
                     <h2>Login</h2>
@@ -21,8 +24,8 @@ function Login() {
                     <TextField type="password" name="password" label="Password" variant="standard"  sx={{width: "90%", marginTop: "20px"}} />
                     <br />
                     <Button variant="contained" sx={{ marginTop: "20px" }}>Log In</Button>
-                    <p className={'small-text'}><a href="#">Forgot your password?</a></p>
-                    <p className={'small-text'}>Don't have an account? <a href="#">Sign up here.</a></p>
+                    <p className={'small-text'}><Link to="/forgot">Forgot your password?</Link></p>
+                    <p className={'small-text'}>Don't have an account? <Link to="/signup">Sign up here.</Link></p>
                 </form>
             </Card>
         </div>
