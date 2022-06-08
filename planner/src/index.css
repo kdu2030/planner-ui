@@ -25,7 +25,7 @@ a{
   color: grey;
 }
 
-.Login, .Signup, .Forgot{
+.Login, .Signup, .Forgot, .Verify{
   background-image: url("/public/login_background.jpg");
   height: 100vh;
 }
@@ -41,6 +41,11 @@ a{
 
 
 .Forgot .MuiButton-root{
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.Verify .MuiButton-root{
   margin-top: 20px;
   margin-bottom: 20px;
 }
@@ -61,4 +66,9 @@ a{
   font-size: 20pt;
   margin-top: 0px;
 }
+
+.verify-text{
+  text-align: center;
+}
+
 
