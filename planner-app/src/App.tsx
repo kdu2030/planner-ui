@@ -1,14 +1,31 @@
 import React from 'react';
-import { FormikSignup } from "./components/formik-signup";
+import { Authentication } from "./components/authentication";
+import { Signin } from "./components/signin";
+import { Signup } from "./components/signup";
 import { ChakraProvider } from '@chakra-ui/react';
 import { theme } from "./helpers/theme";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
-function App() {
+export function App() {
+  const route = createBrowserRouter([
+    {
+      path: "/",
+      element: <Authentication><Signin/></Authentication>
+    },
+    {
+      path: "/signin",
+      element: <Authentication><Signin/></Authentication>
+    },
+    {
+      path: "/signup",
+      element: <Authentication><Signup/></Authentication>
+    }
+  ])
 
   return (
     <div className="App">
       <ChakraProvider theme={theme}>
-        <FormikSignup />
+        <RouterProvider router={route} />
       </ChakraProvider>
     </div>
   );
