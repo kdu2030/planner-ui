@@ -13,6 +13,14 @@ export type Token = {
     iss: string;
 }
 
+export type AuthAPIResponse = {
+    result: string,
+    username?: string,
+    email?: string,
+    profileImage?: string,
+    token?: string
+}
+
 export const getPasswordHash = async (password: string): Promise<string> => {
     const encoder = new TextEncoder();
     const data = encoder.encode(password);
@@ -28,10 +36,10 @@ export const getPasswordHash = async (password: string): Promise<string> => {
 export const decodeAndSaveToken = (tokenStr: string) => {
     const token = jwtDecode<Token>(tokenStr);
     const tokenData = {
-        hash: token,
+        hash: tokenStr,
         expirationDate: new Date(token.exp * 1000)
     }
-    localStorage.setItem("token", JSON.stringify(token));
+    localStorage.setItem("token", JSON.stringify(tokenData));
 }
 
 

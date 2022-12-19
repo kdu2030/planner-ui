@@ -1,13 +1,71 @@
 import * as React from "react";
 import { signinSchema } from "../helpers/signin-validation";
-import { Formik, Form } from "formik";
+import { Formik, Form, FormikHelpers } from "formik";
 import { FormikInput } from "./formik-input";
 import { Button } from "@chakra-ui/react";
-import { green } from "../helpers/constants";
+import { green, localAPIURL } from "../helpers/constants";
 import { Link } from "react-router-dom";
+import { getPasswordHash, AuthAPIResponse, decodeAndSaveToken } from "../helpers/auth-helpers";
+import { authContext, AuthData } from "../helpers/context";
+import axios from "axios";
+import { useToast } from "@chakra-ui/react";
+import { postToAPI } from "../helpers/api-helpers";
+
+type SigninFormData = {
+    email: string,
+    password: string
+}
 
 export const Signin: React.FC = () => {
 
+    const authData = React.useContext<AuthData>(authContext);
+    const toast = useToast();
+    
+    const getSigninAPIData = async (formData: SigninFormData) => {
+        const passwordHash = await getPasswordHash(formData.password);
+        const signinData = {
+            email: formData.email,
+            passwordHash: passwordHash
+        }
+        return signinData;
+    }
+
+    const submitSigninForm = async (formData: SigninFormData) => {
+        const signinAPIData = await getSigninAPIData(formData);
+        const response = await postToAPI<AuthAPIResponse>("/auth/login", signinAPIData, toast);
+        if(response){
+            return response;
+        }
+        return { result: "Unable to reach"};
+    }
+
+    const signinHandler = (formData: SigninFormData, formHelpers: FormikHelpers<SigninFormData>) => {
+        submitSigninForm(formData)
+        .then((response) => {
+            if(response.result === "Unable to reach"){
+                return;
+            }
+            else if(response.result === "User Not Found"){
+                formHelpers.setFieldError("email", "A user with this email does not exist.");
+                return;
+            }
+            else if(response.result === "Incorrect password"){
+                formHelpers.setFieldError("password", "Your password is incorrect.");
+                return;
+            }
+
+            if(!response.email || !response.username || !response.profileImage || !response.token){
+                return;
+            }
+            decodeAndSaveToken(response.token);
+            authData.token = response.token;
+            authData.email = response.email;
+            authData.username = response.username;
+            authData.profileImage = response.profileImage;
+        })
+    }
+
+    
 
     return (
         <>
@@ -20,7 +78,7 @@ export const Signin: React.FC = () => {
                 }}
                 validationSchema={signinSchema}
                 validateOnBlur
-                onSubmit={() => console.log("Hello")}
+                onSubmit={(values, formikBag) => signinHandler(values, formikBag)}
             >
                 {(props) => (
                     <Form className="flex flex-col items-center my-3">

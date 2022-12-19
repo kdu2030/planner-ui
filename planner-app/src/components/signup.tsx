@@ -2,12 +2,13 @@ import * as React from "react";
 import { signupSchema } from "../helpers/signup-validation";
 import { Formik, Form, FormikHelpers} from "formik";
 import { FormikInput } from "./formik-input";
-import { Button } from "@chakra-ui/react";
+import { Button, useToast } from "@chakra-ui/react";
 import { green, localAPIURL } from "../helpers/constants";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import { getPasswordHash, decodeAndSaveToken } from "../helpers/auth-helpers";
+import { getPasswordHash, decodeAndSaveToken, AuthAPIResponse } from "../helpers/auth-helpers";
 import { authContext, AuthData } from "../helpers/context";
+import { postToAPI } from "../helpers/api-helpers";
 
 type SignupFormData = {
     username: string,
@@ -16,17 +17,9 @@ type SignupFormData = {
     confirmPassword: string
 }
 
-type SignupAPIResponse = {
-    result: string,
-    username?: string,
-    email?: string,
-    profileImage?: string,
-    token?: string
-}
-
 export const Signup: React.FC = () => {
-
     const authData = React.useContext<AuthData>(authContext)
+    const toast = useToast();
 
     const getSignupAPIData = async (formData: SignupFormData) => {
         const passwordHash = await getPasswordHash(formData.password);
@@ -40,18 +33,20 @@ export const Signup: React.FC = () => {
 
     const submitSignupForm = async (formData: SignupFormData) => {
         const signupData = await getSignupAPIData(formData);
-        const response = await axios<SignupAPIResponse>({
-            method: "POST",
-            url: localAPIURL + "/auth/signup",
-            data: signupData
-        })
-        return response.data;
+        const response = await postToAPI<AuthAPIResponse>("/auth/signup", signupData, toast);
+        if(response){
+            return response;
+        }
+        return {result: "Unable to reach"};
     }
 
     const signupHandler = (formData: SignupFormData, formHelpers: FormikHelpers<SignupFormData> ) => {
         submitSignupForm(formData)
-            .then((response: SignupAPIResponse) => {
-                if(response.result === "User with username exists"){
+            .then((response: AuthAPIResponse) => {
+                if(response.result === "Unable to reach"){
+                    return;
+                }
+                else if(response.result === "User with username exists"){
                     formHelpers.setFieldError("username", "A user with this username already exists.");
                     return;
                 }
