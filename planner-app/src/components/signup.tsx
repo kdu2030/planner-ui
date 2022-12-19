@@ -3,9 +3,8 @@ import { signupSchema } from "../helpers/signup-validation";
 import { Formik, Form, FormikHelpers} from "formik";
 import { FormikInput } from "./formik-input";
 import { Button, useToast } from "@chakra-ui/react";
-import { green, localAPIURL } from "../helpers/constants";
+import { green } from "../helpers/constants";
 import { Link } from "react-router-dom";
-import axios from "axios";
 import { getPasswordHash, decodeAndSaveToken, AuthAPIResponse } from "../helpers/auth-helpers";
 import { authContext, AuthData } from "../helpers/context";
 import { postToAPI } from "../helpers/api-helpers";
@@ -51,7 +50,7 @@ export const Signup: React.FC = () => {
                     return;
                 }
                 else if(response.result === "User with email exists"){
-                    formHelpers.setFieldError("email", "A user with this email already exists");
+                    formHelpers.setFieldError("email", "A user with this email already exists.");
                     return;
                 }
                 if(!response.username || !response.email || !response.profileImage || !response.token){
