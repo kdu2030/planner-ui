@@ -19,3 +19,6 @@ export const green = {
         brand: {...green}
     }
   })
+
+  export const localAPIURL = "https://localhost:7074";
+  

@@ -3,7 +3,7 @@ import { Authentication } from "./components/authentication";
 import { Signin } from "./components/signin";
 import { Signup } from "./components/signup";
 import { ChakraProvider } from '@chakra-ui/react';
-import { theme } from "./helpers/theme";
+import { theme } from "./helpers/constants";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 export function App() {

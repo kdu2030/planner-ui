@@ -3,3 +3,21 @@
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
+import { createHash, randomBytes } from 'crypto';
+
+Object.defineProperty(global.self, "crypto", {
+  value: {
+    getRandomValues: (arr: any) => randomBytes(arr.length),
+    subtle: {
+      digest: (algorithm: string, data: Uint8Array) => {
+        return new Promise((resolve, reject) =>
+          resolve(
+            createHash(algorithm.toLowerCase().replace("-", ""))
+              .update(data)
+              .digest()
+          )
+        );
+      },
+    },
+  },
+});

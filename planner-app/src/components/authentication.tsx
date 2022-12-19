@@ -1,7 +1,7 @@
 import * as React from "react";
 import logo from "../static/logo.png";
 import notepad from "../static/notepad.jpg";
-import { green } from "../helpers/theme";
+import { green } from "../helpers/constants";
 
 type AuthenticationProps = {
     children: React.ReactNode

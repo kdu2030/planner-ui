@@ -1,12 +1,76 @@
 import * as React from "react";
 import { signupSchema } from "../helpers/signup-validation";
-import { Formik, Form } from "formik";
+import { Formik, Form, FormikHelpers} from "formik";
 import { FormikInput } from "./formik-input";
 import { Button } from "@chakra-ui/react";
-import { green } from "../helpers/theme";
+import { green, localAPIURL } from "../helpers/constants";
 import { Link } from "react-router-dom";
+import axios from "axios";
+import { getPasswordHash, decodeAndSaveToken } from "../helpers/auth-helpers";
+import { authContext, AuthData } from "../helpers/context";
+
+type SignupFormData = {
+    username: string,
+    email: string,
+    password: string,
+    confirmPassword: string
+}
+
+type SignupAPIResponse = {
+    result: string,
+    username?: string,
+    email?: string,
+    profileImage?: string,
+    token?: string
+}
 
 export const Signup: React.FC = () => {
+
+    const authData = React.useContext<AuthData>(authContext)
+
+    const getSignupAPIData = async (formData: SignupFormData) => {
+        const passwordHash = await getPasswordHash(formData.password);
+        const signupAPIData = {
+            username: formData.username,
+            email: formData.email,
+            passwordHash: passwordHash
+        };
+        return signupAPIData;
+    }
+
+    const submitSignupForm = async (formData: SignupFormData) => {
+        const signupData = await getSignupAPIData(formData);
+        const response = await axios<SignupAPIResponse>({
+            method: "POST",
+            url: localAPIURL + "/auth/signup",
+            data: signupData
+        })
+        return response.data;
+    }
+
+    const signupHandler = (formData: SignupFormData, formHelpers: FormikHelpers<SignupFormData> ) => {
+        submitSignupForm(formData)
+            .then((response: SignupAPIResponse) => {
+                if(response.result === "User with username exists"){
+                    formHelpers.setFieldError("username", "A user with this username already exists.");
+                    return;
+                }
+                else if(response.result === "User with email exists"){
+                    formHelpers.setFieldError("email", "A user with this email already exists");
+                    return;
+                }
+                if(!response.username || !response.email || !response.profileImage || !response.token){
+                    return;
+                }
+                decodeAndSaveToken(response.token);
+                authData.token = response.token;
+                authData.username = response.username;
+                authData.email = response.email;
+                authData.profileImage = response.profileImage;
+            });
+    }
+
+
 
     return (
         <>
@@ -21,7 +85,7 @@ export const Signup: React.FC = () => {
                 }}
                 validationSchema={signupSchema}
                 validateOnBlur
-                onSubmit={() => console.log("Hello")}
+                onSubmit={(values, formikBag) => (signupHandler(values, formikBag))}
             >
                 {(props) => (
                     <Form className="flex flex-col items-center my-3">
