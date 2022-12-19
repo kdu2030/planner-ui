@@ -4,11 +4,7 @@ import axios from "axios";
 
 export const postToAPI = async <Type>(url: string, data: object, toast: Function) => {
     try{ 
-        const response = await axios<Type>({
-            method: "POST",
-            url: localAPIURL + url,
-            data: data
-        })
+        const response = await axios.post<Type>(localAPIURL + url, data);
         return response.data;
     }
     catch{

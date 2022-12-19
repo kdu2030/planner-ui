@@ -4,6 +4,9 @@
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
 import { createHash, randomBytes } from 'crypto';
+import { TextEncoder } from 'util';
+
+global.TextEncoder = TextEncoder;
 
 Object.defineProperty(global.self, "crypto", {
   value: {

@@ -3,11 +3,10 @@ import { signinSchema } from "../helpers/signin-validation";
 import { Formik, Form, FormikHelpers } from "formik";
 import { FormikInput } from "./formik-input";
 import { Button } from "@chakra-ui/react";
-import { green, localAPIURL } from "../helpers/constants";
+import { green} from "../helpers/constants";
 import { Link } from "react-router-dom";
 import { getPasswordHash, AuthAPIResponse, decodeAndSaveToken } from "../helpers/auth-helpers";
 import { authContext, AuthData } from "../helpers/context";
-import axios from "axios";
 import { useToast } from "@chakra-ui/react";
 import { postToAPI } from "../helpers/api-helpers";
 
